@@ -104,7 +104,7 @@ func (p Postgres) UpdateRental(entity *rental.UpdateRentalRequest) error {
 	UPDATE 
 		"rentals"  
 	SET 
-		"car_id"=:ca, "customer_id"=:cu, "start_date"=:s, "end_date"=:e, "payment"=:p, updated_at=now() WHERE deleted_at IS NULL AND id=:id`, map[string]interface{}{
+		"car_id"=:ca, "customer_id"=:cu, "start_date"=:s, "end_date"=:e, "payment"=:p, updated_at=now() WHERE deleted_at IS NULL AND rental_id=:id`, map[string]interface{}{
 		"id": entity.RentalId,
 		"ca": entity.CarId,
 		"cu": entity.CustomerId,
@@ -130,7 +130,7 @@ func (p Postgres) UpdateRental(entity *rental.UpdateRentalRequest) error {
 
 // DeleteRental ...
 func (p Postgres) DeleteRental(id string) error {
-	res, err := p.DB.Exec("UPDATE car SET deleted_at=now() WHERE id=$1 AND deleted_at IS NULL", id)
+	res, err := p.DB.Exec("UPDATE rentals SET deleted_at=now() WHERE rental_id=$1 AND deleted_at IS NULL", id)
 	if err != nil {
 		return err
 	}

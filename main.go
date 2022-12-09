@@ -2,10 +2,8 @@ package main
 
 import (
 	"car_rental/config"
-	"car_rental/genprotos/brand"
-	"car_rental/genprotos/car"
-	bService "car_rental/services/barnd"
-	cService "car_rental/services/car"
+	"car_rental/genprotos/rental"
+	rService "car_rental/services/rental"
 	"car_rental/storage"
 	"car_rental/storage/postgres"
 	"fmt"
@@ -39,16 +37,12 @@ func main() {
 		panic(err)
 	}
 
-	c := &bService.BrandService{
+	c := &rService.RentalService{
 		Stg: inter,
 	}
 	s := grpc.NewServer()
-	brand.RegisterBrandServiceServer(s, c)
+	rental.RegisterRentalServiceServer(s, c)
 
-	c1 := &cService.CarService{
-		Stg: inter,
-	}
-	car.RegisterCarServiceServer(s, c1)
 	reflection.Register(s)
 
 	if err := s.Serve(listener); err != nil {
