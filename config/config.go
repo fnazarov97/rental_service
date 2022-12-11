@@ -19,6 +19,15 @@ type Config struct {
 	DefaultOffset string
 	DefaultLimit  string
 
+	CarServiceGrpcHost string
+	CarServiceGrpcPort string
+
+	RentalServiceGrpcHost string
+	RentalServiceGrpcPort string
+
+	AuthorizationServiceGrpcHost string
+	AuthorizationServiceGrpcPort string
+
 	PostgresHost     string
 	PostgresPort     int
 	PostgresDatabase string
@@ -41,6 +50,15 @@ func Load() Config {
 
 	config.DefaultOffset = cast.ToString(getOrReturnDefaultValue("DEFAULT_OFFSET", "0"))
 	config.DefaultLimit = cast.ToString(getOrReturnDefaultValue("DEFAULT_LIMIT", "10"))
+
+	config.CarServiceGrpcHost = cast.ToString(getOrReturnDefaultValue("CAR_SERVICE_GRPC_HOST", "localhost"))
+	config.CarServiceGrpcPort = cast.ToString(getOrReturnDefaultValue("CAR_SERVICE_GRPC_PORT", ":7001"))
+
+	config.RentalServiceGrpcHost = cast.ToString(getOrReturnDefaultValue("RENTAL_SERVICE_GRPC_HOST", "localhost"))
+	config.RentalServiceGrpcPort = cast.ToString(getOrReturnDefaultValue("RENTAL_SERVICE_GRPC_PORT", ":7003"))
+
+	config.AuthorizationServiceGrpcHost = cast.ToString(getOrReturnDefaultValue("AUTHORIZATION_SERVICE_GRPC_HOST", "localhost"))
+	config.AuthorizationServiceGrpcPort = cast.ToString(getOrReturnDefaultValue("AUTHORIZATION_SERVICE_GRPC_PORT", ":7002"))
 
 	config.PostgresHost = cast.ToString(getOrReturnDefaultValue("POSTGRES_HOST", "127.0.0.1"))
 	config.PostgresPort = cast.ToInt(getOrReturnDefaultValue("POSTGRES_PORT", 5432))

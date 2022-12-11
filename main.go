@@ -1,6 +1,7 @@
 package main
 
 import (
+	"car_rental/clients"
 	"car_rental/config"
 	"car_rental/genprotos/rental"
 	rService "car_rental/services/rental"
@@ -36,7 +37,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	//------clients
+	grpcClients, err := clients.NewGrpcClients(conf)
 
+	if err != nil {
+		panic(err)
+	}
+
+	defer grpcClients.Close()
+	//------
 	c := &rService.RentalService{
 		Stg: inter,
 	}

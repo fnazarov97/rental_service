@@ -36,8 +36,8 @@ func (p Postgres) GetRentalByID(id string) (*rental.GetRentalByIDResponse, error
 	"payment", "created_at", "updated_at"
     FROM "rentals" WHERE "rental_id" = $1`, id).Scan(
 		&res.RentalId,
-		&res.Car.CarId,
-		&res.Customer.Id,
+		&res.CarId,
+		&res.CustomerId,
 		&res.StartDate,
 		&res.EndDate,
 		&res.Payment,
@@ -134,7 +134,6 @@ func (p Postgres) DeleteRental(id string) error {
 	if err != nil {
 		return err
 	}
-
 	n, err := res.RowsAffected()
 	if err != nil {
 		return err
