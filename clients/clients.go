@@ -9,6 +9,11 @@ import (
 	"google.golang.org/grpc"
 )
 
+type ServiceManageI interface {
+	CarService() car.CarServiceClient
+	AuthService() authorization.AuthServiceClient
+}
+
 type GrpcClients struct {
 	Car           car.CarServiceClient
 	Rental        rental.RentalServiceClient
@@ -41,6 +46,14 @@ func NewGrpcClients(cfg config.Config) (*GrpcClients, error) {
 		Authorization: authorization,
 		conns:         append(conns, connCar, connRental, connAuthorization),
 	}, nil
+}
+
+func (g *GrpcClients) CarService() car.CarServiceClient {
+	return g.Car
+}
+
+func (g *GrpcClients) AuthService() authorization.AuthServiceClient {
+	return g.Authorization
 }
 
 func (c *GrpcClients) Close() {

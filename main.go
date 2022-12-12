@@ -4,7 +4,7 @@ import (
 	"car_rental/clients"
 	"car_rental/config"
 	"car_rental/genprotos/rental"
-	rService "car_rental/services/rental"
+	rservise "car_rental/services/rental"
 	"car_rental/storage"
 	"car_rental/storage/postgres"
 	"fmt"
@@ -46,9 +46,9 @@ func main() {
 
 	defer grpcClients.Close()
 	//------
-	c := &rService.RentalService{
-		Stg: inter,
-	}
+
+	c := rservise.NewRentalService(*grpcClients, inter)
+
 	s := grpc.NewServer()
 	rental.RegisterRentalServiceServer(s, c)
 
