@@ -1,10 +1,10 @@
- 
+
 run: 
 	go run main.go
-migrateup:
-	migrate -path ./storage/migrations -database 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}?sslmode=disable' up
-migratedown:
-	migrate -path ./storage/migrations -database 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}?sslmode=disable' down
+migrate-up:
+	migrate -path ./storage/migrations -database 'postgres://farhod:f@rhod666997@localhost:5432/rentals?sslmode=disable' up
+migrate-down:
+	migrate -path ./storage/migrations -database 'postgres://farhod:f@rhod666997@localhost:5432/rentals?sslmode=disable' down
 pull-proto-module:
 	git submodule update --init --recursive
 

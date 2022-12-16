@@ -145,3 +145,42 @@ func (p Postgres) DeleteRental(id string) error {
 
 	return errors.New("rental not found")
 }
+
+// GetRentalsByUserId ...
+func (p Postgres) GetRentalsByUserId(offset, limit int, search, customer_id string) (*rental.GetRentalsByUserIdResponse, error) {
+
+	resp := &rental.GetRentalsByUserIdResponse{
+		Rentals: make([]*rental.Rental, 0),
+	}
+
+	rows, err := p.DB.Queryx(`
+	SELECT
+	"rental_id", "car_id", "customer_id", "start_date", "end_date", "payment", "created_at", "updated_at"
+	FROM "rentals"
+	WHERE deleted_at IS NULL AND "customer_id" = $1 AND(start_date ILIKE '%' || $2 || '%')
+	LIMIT $3
+	OFFSET $4
+	`, customer_id, search, limit, offset)
+	if err != nil {
+		return resp, err
+	}
+
+	for rows.Next() {
+		a := &rental.Rental{}
+		var updatedAt *string
+		err := rows.Scan(
+			&a.RentalId, &a.CarId, &a.CustomerId, &a.StartDate, &a.EndDate, &a.Payment, &a.CreatedAt, &updatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if updatedAt != nil {
+			a.UpdatedAt = *updatedAt
+		}
+
+		resp.Rentals = append(resp.Rentals, a)
+	}
+
+	return resp, err
+}

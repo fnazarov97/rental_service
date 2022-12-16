@@ -19,14 +19,14 @@ import (
 type RentalService struct {
 	Stg storage.StorageI
 	rental.UnimplementedRentalServiceServer
-	services clients.ServiceManageI
+	Services clients.ServiceManageI
 	// grpcClients *clients.GrpcClients
 }
 
 func NewRentalService(s clients.GrpcClients, stg storage.StorageI) *RentalService {
 	return &RentalService{
 		Stg:      stg,
-		services: &s,
+		Services: &s,
 	}
 }
 
@@ -34,19 +34,18 @@ func NewRentalService(s clients.GrpcClients, stg storage.StorageI) *RentalServic
 func (a *RentalService) CreateRental(c context.Context, req *rental.CreateRentalRequest) (*rental.Rental, error) {
 	id := uuid.New()
 
-	car, e := a.services.CarService().GetCarByID(c, &car.GetCarByIDRequest{
+	car, e := a.Services.CarService().GetCarByID(c, &car.GetCarByIDRequest{
 		Id: req.CarId,
 	})
 	if e != nil {
-		return nil, status.Errorf(codes.NotFound, "a.services.CarService().GetCarByID: %s", e.Error())
+		return nil, status.Errorf(codes.NotFound, "a.Services.CarService().GetCarByID: %s", e.Error())
 	}
-
-	customer, e := a.services.AuthService().GetUserByID(c, &authorization.GetUserByIDRequest{
+	customer, e := a.Services.AuthService().GetUserByID(c, &authorization.GetUserByIDRequest{
 		Id: req.CustomerId,
 	})
 
 	if e != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "a.services.AuthService().GetUserByID: %s", e.Error())
+		return nil, status.Errorf(codes.Unauthenticated, "a.Services.AuthService().GetUserByID: %s", e.Error())
 	}
 
 	err := a.Stg.CreateRental(id.String(), req)
@@ -75,11 +74,11 @@ func (a *RentalService) GetRentalByID(c context.Context, req *rental.GetRentalBy
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "a.Stg.GetRentalByID: %s", err.Error())
 	}
-	car, e := a.services.CarService().GetCarByID(c, &car.GetCarByIDRequest{
+	car, e := a.Services.CarService().GetCarByID(c, &car.GetCarByIDRequest{
 		Id: res.CarId,
 	})
 	if e != nil {
-		return nil, status.Errorf(codes.NotFound, "a.services.CarService().GetCarByID: %s", e.Error())
+		return nil, status.Errorf(codes.NotFound, "a.Services.CarService().GetCarByID: %s", e.Error())
 	}
 	res.Car.CarId = car.CarId
 	res.Car.Model = car.Model
@@ -90,7 +89,7 @@ func (a *RentalService) GetRentalByID(c context.Context, req *rental.GetRentalBy
 	res.CreatedAt = car.CreatedAt
 	res.UpdatedAt = car.UpdatedAt
 
-	customer, err := a.services.AuthService().GetUserByID(c, &authorization.GetUserByIDRequest{
+	customer, err := a.Services.AuthService().GetUserByID(c, &authorization.GetUserByIDRequest{
 		Id: res.CustomerId,
 	})
 	res.Customer.Id = customer.Id
@@ -121,19 +120,19 @@ func (a *RentalService) GetRentalList(c context.Context, req *rental.GetRentalLi
 
 // UpdateRental ...
 func (a *RentalService) UpdateRental(c context.Context, req *rental.UpdateRentalRequest) (*rental.Rental, error) {
-	_, err := a.services.AuthService().GetUserByID(c, &authorization.GetUserByIDRequest{
+	_, err := a.Services.AuthService().GetUserByID(c, &authorization.GetUserByIDRequest{
 		Id: req.CustomerId,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.NotFound, "a.services.AuthService().GetUserByID: %s", err.Error())
+		return nil, status.Errorf(codes.NotFound, "a.Services.AuthService().GetUserByID: %s", err.Error())
 	}
 
-	_, err = a.services.CarService().GetCarByID(c, &car.GetCarByIDRequest{
+	_, err = a.Services.CarService().GetCarByID(c, &car.GetCarByIDRequest{
 		Id: req.CarId,
 	})
 
 	if err != nil {
-		return nil, status.Errorf(codes.NotFound, "a.services.CarService().GetCarByID: %s", err.Error())
+		return nil, status.Errorf(codes.NotFound, "a.Services.CarService().GetCarByID: %s", err.Error())
 	}
 
 	err = a.Stg.UpdateRental(req)
@@ -178,4 +177,15 @@ func (a *RentalService) DeleteRental(c context.Context, req *rental.DeleteRental
 		CreatedAt:  res.CreatedAt,
 		UpdatedAt:  res.UpdatedAt,
 	}, nil
+}
+
+// GetRentalsByUserId ...
+func (a *RentalService) GetRentalsByUserId(c context.Context, req *rental.GetRentalsByUserIdRequest) (*rental.GetRentalsByUserIdResponse, error) {
+
+	res, err := a.Stg.GetRentalsByUserId(int(req.Offset), int(req.Limit), req.Search, req.UserId)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "a.Stg.GetRentalByID: %s", err.Error())
+	}
+
+	return res, nil
 }

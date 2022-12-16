@@ -10,4 +10,5 @@ type StorageI interface {
 	GetRentalList(offset, limit int, search string) (*rental.GetRentalListResponse, error)
 	UpdateRental(entity *rental.UpdateRentalRequest) error
 	DeleteRental(id string) error
+	GetRentalsByUserId(offset, limit int, search, customer_id string) (*rental.GetRentalsByUserIdResponse, error)
 }
